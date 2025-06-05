@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - SpringMotors</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/stylesRegistro.css">
+</head>
+<body>
+    <!-- Carousel Background -->
+    <div class="carousel-bg">
+        <img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Car 1" class="carousel-img" style="opacity: 1;">
+        <img src="https://images.unsplash.com/photo-1502877338535-766e1452684a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Car 2" class="carousel-img">
+        <img src="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Car 3" class="carousel-img">
+        <img src="images/carrusel/carrusel2.png" alt="Car 5" class="carousel-img">  
+        <img src="images/carrusel/carrusel3.png" alt="Car 6" class="carousel-img">  
+        <div class="overlay"></div>
+    </div>
+    
+    <!-- Register Container -->
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <i class="fas fa-car"></i>
+                Spring<span>Motors</span>
+            </div>
+            
+            <h2>Crear Cuenta</h2>
+            
+            <form th:action="@{/registro}" th:object="${usuario}" method="post">
+                <div class="form-group username-field">
+                    <label for="nombreUsuario">Nombre de usuario</label>
+                    <input type="text" id="nombreUsuario" th:field="*{nombreUsuario}" placeholder="Ingresa tu usuario" required>
+                </div>
+                
+                <div class="form-group password-field">
+                    <label for="contrasena">Contraseña</label>
+                    <input type="password" id="contrasena" th:field="*{contrasena}" placeholder="Ingresa tu contraseña" required>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="auth-btn">Registrarse</button>
+                    <a href="/" class="back-btn">Volver</a>
+                </div>
+                
+                <div class="auth-links">
+                    <a href="/login">¿Ya tienes cuenta? Inicia sesión</a>
+                </div>
+            </form>
+            
+            <div th:if="${error}" class="auth-message auth-error">
+                <i class="fas fa-exclamation-circle"></i> <span th:text="${error}"></span>
+            </div>
+            
+            <div th:if="${success}" class="auth-message auth-success">
+                <i class="fas fa-check-circle"></i> <span th:text="${success}"></span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Carousel functionality
+        const slides = document.querySelectorAll('.carousel-bg .carousel-img');
+        let current = 0;
+        
+        function nextSlide() {
+            slides[current].style.opacity = 0;
+            current = (current + 1) % slides.length;
+            slides[current].style.opacity = 1;
+        }
+        
+        // Change slide every 5 seconds
+        setInterval(nextSlide, 5000);
+        
+        // Initialize carousel
+        slides.forEach((slide, index) => {
+            if (index !== 0) {
+                slide.style.opacity = 0;
+            }
+        });
+    </script>
+</body>
+</html>

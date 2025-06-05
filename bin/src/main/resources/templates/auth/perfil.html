@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Perfil - SpringMotors</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/stylesPerfil.css">
+</head>
+<body>
+    <!-- Carousel Background -->
+    <div class="carousel-bg">
+        <img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Car 1" class="carousel-img" style="opacity: 1;">
+        <img src="https://images.unsplash.com/photo-1502877338535-766e1452684a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Car 2" class="carousel-img">
+        <img src="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Car 3" class="carousel-img">
+        <div class="overlay"></div>
+    </div>
+    
+    <!-- Profile Container -->
+    <div class="profile-container">
+        <div class="profile-card">
+            <div class="profile-header">
+                <div class="profile-avatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <h2 th:text="${username}">Nombre de Usuario</h2>
+                <span class="profile-role" th:text="${role}">ROL</span>
+            </div>
+            
+            <div class="profile-content">
+                <div class="profile-details">
+                    <h3><i class="fas fa-user-cog"></i> Información de la cuenta</h3>
+                    <div class="detail-item">
+                        <span class="detail-icon"><i class="fas fa-user"></i></span>
+                        <div class="detail-content">
+                            <span class="detail-label">Nombre de usuario</span>
+                            <span class="detail-value" th:text="${username}">usuario123</span>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-icon"><i class="fas fa-user-tag"></i></span>
+                        <div class="detail-content">
+                            <span class="detail-label">Rol</span>
+                            <span class="detail-value" th:text="${role}">Usuario</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de Vehículos -->
+                <div class="purchases-section" th:if="${not #sets.isEmpty(vehiculos)}">
+                    <h3><i class="fas fa-car"></i> Mis Vehículos Comprados</h3>
+                    <div class="purchases-grid">
+                        <div class="purchase-item" th:each="vehiculo : ${vehiculos}">
+                            <div class="purchase-image">
+                                <img th:if="${vehiculo.fotoBase64}" 
+                                     th:src="${vehiculo.fotoBase64}" 
+                                     alt="Vehículo">
+                                <i th:unless="${vehiculo.fotoBase64}" class="fas fa-car"></i>
+                            </div>
+                            <div class="purchase-details">
+                                <h4 th:text="${vehiculo.modelo}">Marca Modelo</h4>
+                                <p><strong>Año:</strong> <span th:text="${vehiculo.anio}"></span></p>
+                                <p><strong>Precio:</strong> $<span th:text="${#numbers.formatDecimal(vehiculo.precio, 1, 2, 'COMMA')}"></span></p>
+                                <p><strong>Color:</strong> <span th:text="${vehiculo.color}"></span></p>
+                                <p><strong>Transmisión:</strong> <span th:text="${vehiculo.transmision}"></span></p>
+                                <p><strong>Combustible:</strong> <span th:text="${vehiculo.combustible}"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de Repuestos -->
+                <div class="purchases-section" th:if="${not #sets.isEmpty(repuestos)}">
+                    <h3><i class="fas fa-cog"></i> Mis Repuestos Comprados</h3>
+                    <div class="purchases-grid">
+                        <div class="purchase-item" th:each="repuesto : ${repuestos}">
+                            <div class="purchase-image">
+                                <img th:if="${repuesto.fotoBase64}" 
+                                     th:src="${repuesto.fotoBase64}" 
+                                     alt="Repuesto">
+                                <i th:unless="${repuesto.fotoBase64}" class="fas fa-cog"></i>
+                            </div>
+                            <div class="purchase-details">
+                                <h4 th:text="${repuesto.nombre}">Marca Nombre</h4>
+                                <p><strong>Tipo:</strong> <span th:text="${repuesto.tipo}"></span></p>
+                                <p><strong>Precio:</strong> $<span th:text="${#numbers.formatDecimal(repuesto.precio, 1, 2, 'COMMA')}"></span></p>
+                                <p><strong>Descripción:</strong> <span th:text="${repuesto.descripcion}"></span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <a href="/" class="profile-btn back-btn">
+                    <i class="fas fa-home"></i> Volver al inicio
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Carousel functionality
+            const slides = document.querySelectorAll('.carousel-bg .carousel-img');
+            let current = 0;
+            
+            function nextSlide() {
+                slides[current].style.opacity = 0;
+                current = (current + 1) % slides.length;
+                slides[current].style.opacity = 1;
+            }
+            
+            // Change slide every 5 seconds
+            setInterval(nextSlide, 5000);
+            
+            // Initialize carousel
+            slides.forEach((slide, index) => {
+                if (index !== 0) {
+                    slide.style.opacity = 0;
+                }
+            });
+            
+            // Actualizar el color del rol según el texto
+            function updateRoleColor() {
+                const roleElement = document.querySelector('.profile-role');
+                if (roleElement) {
+                    const roleText = roleElement.textContent.trim().toUpperCase();
+                    
+                    // Reset classes
+                    roleElement.className = 'profile-role';
+                    
+                    if (roleText.includes('ADMIN')) {
+                        roleElement.classList.add('admin-role');
+                    } else if (roleText.includes('MECANICO')) {
+                        roleElement.classList.add('taller-role');
+                    }else if (roleText.includes('GERENTE')) {
+                        roleElement.classList.add('gerente-role');
+                    } else if (roleText.includes('VENTAS')) {
+                        roleElement.classList.add('vendedor-role');
+                    } else {
+                        roleElement.classList.add('user-role');
+                    }
+                }
+            }
+
+            // Ejecutar al cargar
+            updateRoleColor();
+            
+            // Observar cambios en el texto del rol
+            const roleObserver = new MutationObserver(updateRoleColor);
+            const roleElement = document.querySelector('.profile-role');
+            if (roleElement) {
+                roleObserver.observe(roleElement, {
+                    characterData: true,
+                    subtree: true
+                });
+            }
+        });
+    </script>
+</body>
+</html>

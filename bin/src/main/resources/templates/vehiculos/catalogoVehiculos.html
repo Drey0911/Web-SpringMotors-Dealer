@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>Catálogo de Vehículos - SpringMotors</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/stylesCatalogo.css">
+    <style>
+        /* Estilos adicionales para los filtros */
+        .filter-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .filter-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #14213d;
+            font-weight: 600;
+        }
+        
+        .filter-group {
+            margin-bottom: 15px;
+        }
+        
+        .filter-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .filter-input, .filter-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        
+        .filter-button {
+            background-color: #14213d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .filter-button:hover {
+            background-color: #1a2a4a;
+        }
+        
+        .filter-reset {
+            background-color: #6c757d;
+            margin-left: 10px;
+        }
+        
+        .filter-reset:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div th:if="${session.userId}" style="display:none;" id="userId" th:attr="data-userid=${session.userId}"></div>
+    
+    <!-- Navbar elegante -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="logo" href="/">
+                <i class="fas fa-car"></i>
+                <span class="spring">Spring</span><span class="motors">Motors</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="catalog-header">
+        <h1 class="catalog-title">Catálogo de Vehículos</h1>
+        <br><br>
+        <p class="catalog-subtitle">Descubre nuestra exclusiva selección de vehículos premium</p>
+    </div>
+
+    <div class="container">
+        <!-- Sección de filtros -->
+        <div class="filter-section">
+            <h3 class="filter-title">Filtrar Vehículos</h3>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="filter-group">
+                        <label class="filter-label">Marca</label>
+                        <select class="filter-select" id="filter-brand">
+                            <option value="">Todas las marcas</option>
+                             <option th:each="fabricante : ${fabricantes}"
+                                     th:value="${fabricante.nombre}"
+                                     th:text="${fabricante.nombre}"
+                                     
+                             </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="filter-group">
+                        <label class="filter-label">Modelo</label>
+                        <input type="text" class="filter-input" id="filter-model" placeholder="Cualquier modelo">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="filter-group">
+                        <label class="filter-label">Precio máximo</label>
+                        <input type="number" class="filter-input" id="filter-price" placeholder="Sin límite">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="filter-group">
+                        <label class="filter-label">Año mínimo</label>
+                        <input type="number" class="filter-input" id="filter-year" placeholder="Cualquier año">
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="filter-group">
+                        <label class="filter-label">Estado</label>
+                        <select class="filter-select" id="filter-status">
+                            <option value="">Todos</option>
+                           <option value="Nuevo">Nuevo</option>
+                        <option value="Como Nuevo">Como Nuevo</option>
+                        <option value="Usado">Usado</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <button class="filter-button" id="apply-filters">
+                        <i class="fas fa-filter"></i> Aplicar Filtros
+                    </button>
+                    <button class="filter-button filter-reset" id="reset-filters">
+                        <i class="fas fa-undo"></i> Restablecer
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="vehicle-cards-container">
+            <div class="vehicle-cards" id="vehicle-cards">
+                <div th:each="vehiculo : ${vehiculos}" class="vehicle-card">
+                    <div class="card-header">
+                        <div class="vehicle-status" th:classappend="${vehiculo.estado == 'Disponible'} ? 'status-available' : 
+                                      (${vehiculo.estado == 'Vendido'} ? 'status-sold' : 'status-reserved')">
+                            <span th:text="${vehiculo.estado}"></span>
+                        </div>
+                        <div class="vehicle-image-container">
+                            <img th:if="${vehiculo.foto != null}" 
+                                 th:src="${vehiculo.getFotoBase64()}" 
+                                 class="vehicle-image" 
+                                 alt="Imagen del vehículo">
+                            <div th:unless="${vehiculo.foto != null}" class="vehicle-image-placeholder">
+                                <i class="fas fa-car-side"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="vehicle-brand-model">
+                            <span class="vehicle-brand" th:text="${vehiculo.fabricante.nombre}"></span>
+                            <h3 class="vehicle-model" th:text="${vehiculo.modelo}"></h3>
+                        </div>
+                        
+                        <div class="vehicle-specs">
+                            <div class="spec-item">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span th:text="${vehiculo.anio}"></span>
+                            </div>
+                            <div class="spec-item">
+                                <i class="fas fa-tachometer-alt"></i>
+                                <span th:text="${vehiculo.kilometraje + ' km'}"></span>
+                            </div>
+                            <div class="spec-item">
+                                <i class="fas fa-gas-pump"></i>
+                                <span th:text="${vehiculo.combustible}"></span>
+                            </div>
+                            <div class="spec-item">
+                                <i class="fas fa-cog"></i>
+                                <span th:text="${vehiculo.transmision}"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="vehicle-price-container">
+                            <span class="price-label">Precio:</span>
+                            <span class="vehicle-price" th:text="${'$' + #numbers.formatDecimal(vehiculo.precio, 1, 'COMMA', 2, 'POINT')}"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div sec:authorize="isAnonymous()" class="login-message">
+                            <i class="fas fa-info-circle"></i> Inicia sesión para comprar
+                        </div>
+                        
+                        <div sec:authorize="isAuthenticated()">
+                            <button class="buy-btn" th:data-id="${vehiculo.id}">
+                                <i class="fas fa-shopping-cart"></i>
+                                <span>Comprar ahora</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="vehicle-details-overlay">
+                        <div class="details-content">
+                            <h4>Detalles completos</h4>
+                            <div class="detail-item">
+                                <span class="detail-label">Color:</span>
+                                <span class="detail-value" th:text="${vehiculo.color}"></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Tipo:</span>
+                                <span class="detail-value" th:text="${vehiculo.tipo}"></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Estado:</span>
+                                <span class="detail-value" th:text="${vehiculo.estado}"></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Descripcion:</span>
+                                <span class="detail-value" th:text="${vehiculo.descripcion}"></span>
+                            </div>
+                            <button class="close-details-btn">
+                                <i class="fas fa-times"></i> Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div th:if="${vehiculos.empty}" class="no-vehicles">
+                    <i class="fas fa-car-crash"></i>
+                    <h3>No hay vehículos disponibles</h3>
+                    <p>Actualmente no contamos con vehículos en nuestro catálogo</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const buyButtons = document.querySelectorAll('.buy-btn');
+            const userIdElement = document.getElementById('userId');
+            const isAuthenticated = userIdElement !== null;
+            const detailButtons = document.querySelectorAll('.view-details-btn');
+            const closeButtons = document.querySelectorAll('.close-details-btn');
+            
+            // Mostrar detalles al hacer clic en la tarjeta
+            document.querySelectorAll('.vehicle-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Evitar que se active cuando se hace clic en botones u otros elementos interactivos
+                    if (e.target.closest('.buy-btn') || e.target.closest('.close-details-btn')) {
+                        return;
+                    }
+                    this.querySelector('.vehicle-details-overlay').style.display = 'flex';
+                });
+            });
+
+            // Configurar botones de compra
+            buyButtons.forEach(button => {
+                if (!isAuthenticated) {
+                    button.disabled = true;
+                    button.title = "Debe iniciar sesión para comprar";
+                    return;
+                }
+                
+                button.addEventListener('click', async function() {
+                    const vehicleId = this.getAttribute('data-id');
+                    const userId = userIdElement.getAttribute('data-userid');
+                    
+                    if (!vehicleId) {
+                        console.error('ID de vehículo no válido');
+                        return;
+                    }
+                    
+                    try {
+                        const { value: accept } = await Swal.fire({
+                            title: 'Confirmar compra',
+                            html: `¿Estás seguro que deseas comprar este vehículo?`,
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonColor: '#14213d',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Sí, comprar',
+                            cancelButtonText: 'Cancelar'
+                        });
+                        
+                        if (!accept) return;
+                        
+                        Swal.fire({
+                            title: 'Procesando compra...',
+                            allowOutsideClick: false,
+                            didOpen: () => Swal.showLoading()
+                        });
+                        
+                        const token = document.querySelector('meta[name="_csrf"]').content;
+                        const header = document.querySelector('meta[name="_csrf_header"]').content;
+                        
+                        const response = await fetch(`/vehiculos/comprar?id=${vehicleId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                [header]: token
+                            },
+                            body: JSON.stringify({ 
+                                userId: userId,
+                                vehicleId: vehicleId
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            await Swal.fire({
+                                title: '¡Compra exitosa!',
+                                text: result.message,
+                                icon: 'success',
+                                confirmButtonColor: '#14213d'
+                            });
+                            location.reload();
+                        } else {
+                            throw new Error(result.message || 'Error al procesar la compra');
+                        }
+                    } catch (error) {
+                        Swal.fire({
+                            title: 'Error',
+                            text: error.message,
+                            icon: 'error'
+                        });
+                        console.error('Error:', error);
+                    }
+                });
+            });
+            
+            // Configurar botones de detalles
+            detailButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const card = this.closest('.vehicle-card');
+                    card.querySelector('.vehicle-details-overlay').style.display = 'flex';
+                });
+            });
+            
+            closeButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    this.closest('.vehicle-details-overlay').style.display = 'none';
+                });
+            });
+            
+            // Funcionalidad de filtrado
+            const applyFiltersButton = document.getElementById('apply-filters');
+            const resetFiltersButton = document.getElementById('reset-filters');
+            const vehicleCardsContainer = document.getElementById('vehicle-cards');
+            const originalCards = vehicleCardsContainer.innerHTML;
+            
+            applyFiltersButton.addEventListener('click', function() {
+                const brandFilter = document.getElementById('filter-brand').value.toLowerCase();
+                const modelFilter = document.getElementById('filter-model').value.toLowerCase();
+                const priceFilter = parseFloat(document.getElementById('filter-price').value) || Infinity;
+                const yearFilter = parseInt(document.getElementById('filter-year').value) || 0;
+                const statusFilter = document.getElementById('filter-status').value.toLowerCase();
+                
+                const cards = vehicleCardsContainer.querySelectorAll('.vehicle-card');
+                let hasVisibleCards = false;
+                
+                cards.forEach(card => {
+                    const brand = card.querySelector('.vehicle-brand').textContent.toLowerCase();
+                    const model = card.querySelector('.vehicle-model').textContent.toLowerCase();
+                    const priceText = card.querySelector('.vehicle-price').textContent.replace(/[^0-9.]/g, '');
+                    const price = parseFloat(priceText);
+                    const year = parseInt(card.querySelector('.spec-item:nth-child(1) span').textContent);
+                    const status = card.querySelector('.vehicle-status span').textContent.toLowerCase();
+                    
+                    const brandMatch = brandFilter === '' || brand.includes(brandFilter);
+                    const modelMatch = modelFilter === '' || model.includes(modelFilter);
+                    const priceMatch = price <= priceFilter;
+                    const yearMatch = year >= yearFilter;
+                    const statusMatch = statusFilter === '' || status.includes(statusFilter);
+                    
+                    if (brandMatch && modelMatch && priceMatch && yearMatch && statusMatch) {
+                        card.style.display = 'block';
+                        hasVisibleCards = true;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                // Mostrar mensaje si no hay vehículos que coincidan con los filtros
+                const noVehiclesMessage = vehicleCardsContainer.querySelector('.no-vehicles');
+                if (!hasVisibleCards) {
+                    if (!noVehiclesMessage) {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = 'no-vehicles';
+                        messageDiv.innerHTML = `
+                            <i class="fas fa-car-crash"></i>
+                            <h3>No hay vehículos que coincidan con los filtros</h3>
+                            <p>Intenta ajustar tus criterios de búsqueda</p>
+                        `;
+                        vehicleCardsContainer.appendChild(messageDiv);
+                    }
+                } else if (noVehiclesMessage && noVehiclesMessage !== originalNoVehicles) {
+                    vehicleCardsContainer.removeChild(noVehiclesMessage);
+                }
+            });
+            
+            resetFiltersButton.addEventListener('click', function() {
+                // Restablecer los valores de los filtros
+                document.getElementById('filter-brand').value = '';
+                document.getElementById('filter-model').value = '';
+                document.getElementById('filter-price').value = '';
+                document.getElementById('filter-year').value = '';
+                document.getElementById('filter-status').value = '';
+                
+                // Mostrar todos los vehículos
+                const cards = vehicleCardsContainer.querySelectorAll('.vehicle-card');
+                cards.forEach(card => {
+                    card.style.display = 'block';
+                });
+                
+                // Eliminar el mensaje de no hay vehículos si existe (excepto el original)
+                const noVehiclesMessage = vehicleCardsContainer.querySelector('.no-vehicles');
+                if (noVehiclesMessage && !noVehiclesMessage.isEqualNode(originalNoVehicles)) {
+                    vehicleCardsContainer.removeChild(noVehiclesMessage);
+                }
+            });
+            
+            // Guardar referencia al mensaje original de no hay vehículos
+            const originalNoVehicles = vehicleCardsContainer.querySelector('.no-vehicles');
+        });
+    </script>
+</body>
+</html>

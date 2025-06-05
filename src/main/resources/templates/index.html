@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="http://www.thymeleaf.org/extras/spring-security"></html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpringMotors - Concesionario Premium</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar">
+    <div class="navbar-container">
+        <a class="logo" href="#">
+            <i class="fas fa-car"></i>
+            Spring<span>Motors</span>
+        </a>
+        
+        <button class="navbar-toggler" type="button" aria-label="Menú">
+            <i class="fas fa-bars"></i>
+        </button>
+        
+        <div class="nav-collapse">
+            <ul class="nav-links">
+                <li>
+                    <a href="#"><i class="fas fa-home me-1"></i> Inicio</a>
+                </li>
+                <li>
+                    <a href="#vehiculos"><i class="fas fa-car-side me-1"></i> Vehículos</a>
+                </li>
+                <li>
+                    <a href="#repuestos"><i class="fas fa-tools me-1"></i> Repuestos</a>
+                </li>
+                <li>
+                    <a href="#nosotros"><i class="fas fa-users me-1"></i> Acerca de Nosotros</a>
+                </li>
+                <li> </li>
+            </ul>
+            
+            <!-- Botón para usuarios no autenticados -->
+            <div sec:authorize="isAnonymous()" class="nav-buttons" style="margin-left:auto;">
+                <buttom onclick="window.location.href='/login'" class="login-btn">
+                    <i class="fas fa-user me-1"></i>
+                    <span>Iniciar Sesión</span>
+                </buttom>
+            </div>
+
+            <!-- Botón para usuarios autenticados -->
+            <div sec:authorize="isAuthenticated()" class="nav-buttons" style="margin-left:auto;">
+                <div class="user-dropdown">
+                    <button type="button" class="user-btn">
+                        <i class="fas fa-user-circle"></i>
+                        <span sec:authentication="name"></span>
+                        
+                    </button>
+                    <div class="dropdown-menu">
+                        <a href="/perfil">Mi Perfil</a>
+                        <form th:action="@{/logout}" method="post" style="margin:0;">
+                            <button type="submit" class="dropdown-link-logout">Cerrar Sesión</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const toggler = document.querySelector('.navbar-toggler');
+    const navCollapse = document.querySelector('.nav-collapse');
+    
+    if (toggler && navCollapse) {
+        toggler.addEventListener('click', function() {
+            navCollapse.classList.toggle('show');
+        });
+    }
+});
+    </script>
+
+    <!-- Brands Marquee -->
+    <div class="brands-bar">
+        <div class="brands-container">
+            <div class="brand-item">
+                <img src="images/marcas/logo1.png" alt="logo1">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo2.png" alt="logo2">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo3.png" alt="logo3">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo4.png" alt="logo4">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo5.png" alt="logo5">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo6.png" alt="logo6">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo7.png" alt="logo7">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo8.png" alt="logo8">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo9.png" alt="logo9">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo10.png" alt="logo10">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo11.png" alt="logo11">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo12.png" alt="logo12">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo13.png" alt="logo13">
+            </div>
+            <!-- Duplicar para efecto infinito -->
+            <div class="brand-item">
+                <img src="images/marcas/logo1.png" alt="logo1">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo2.png" alt="logo2">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo3.png" alt="logo3">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo4.png" alt="logo4">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo5.png" alt="logo5">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo6.png" alt="logo6">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo7.png" alt="logo7">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo8.png" alt="logo8">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo9.png" alt="logo9">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo10.png" alt="logo10">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo11.png" alt="logo11">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo12.png" alt="logo12">
+            </div>
+            <div class="brand-item">
+                <img src="images/marcas/logo13.png" alt="logo13">
+            </div>
+        </div>
+    </div>
+    <!-- Hero Section with Carousel Background -->
+    <section class="hero" style="position: relative; height: 80vh; min-height: 450px; overflow: hidden;">
+        <!-- Carousel as background -->
+        <div class="carousel-bg" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; overflow: hidden;">
+            <img src="images/carrusel/carrusel1.png" alt="Car 1" class="carousel-img" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top:0; left:0; opacity: 1; transition: opacity 0.5s;">
+            <img src="images/carrusel/carrusel2.png" alt="Car 2" class="carousel-img" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top:0; left:0; opacity: 0; transition: opacity 0.5s;">
+            <img src="images/carrusel/carrusel3.png" alt="Car 3" class="carousel-img" style="width: 100%; height: 100%; object-fit: cover; position: absolute; top:0; left:0; opacity: 0; transition: opacity 0.5s;">
+            <!-- Overlay for dark effect -->
+            <div style="position:absolute;top:0;left:0;width:100%;height:100%;background:radial-gradient(circle,rgba(10, 10, 35, 0.544) 0%,rgba(10,10,35,0.9) 100%);z-index:1;"></div>
+        </div>
+        <!-- Carousel dots only, no arrows -->
+        <div class="carousel-dots" style="position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 3;">
+            <span class="dot" style="display: inline-block; width: 14px; height: 14px; margin: 0 8px; background: var(--accent-blue); border-radius: 50%; cursor: pointer; opacity: 0.5; transition: background 0.3s, opacity 0.3s;"></span>
+            <span class="dot" style="display: inline-block; width: 14px; height: 14px; margin: 0 8px; background: var(--accent-blue); border-radius: 50%; cursor: pointer; opacity: 0.5; transition: background 0.3s, opacity 0.3s;"></span>
+            <span class="dot" style="display: inline-block; width: 14px; height: 14px; margin: 0 8px; background: var(--accent-blue); border-radius: 50%; cursor: pointer; opacity: 0.5; transition: background 0.3s, opacity 0.3s;"></span>
+        </div>
+        <!-- Hero content on top -->
+        <div class="hero-content" style="position: relative; z-index: 2; text-align: left; display: flex; flex-direction: column; align-items: flex-start; gap: 20px;">
+            <h1 class="hero-title">Descubre la excelencia automotriz</h1>
+            <p class="hero-subtitle">En SpringMotors ofrecemos los mejores vehículos y repuestos con calidad premium y servicio excepcional.</p>
+            <div style="display: flex; gap: 16px;">
+            <a th:href="@{/vehiculos/catalogo}" class="hero-btn">Explorar Catálogo</a>
+            <span sec:authorize="isAnonymous()">
+                <a href="/registro" class="register-btn">
+                <i class="fas fa-user-plus"></i>
+                Forma parte de nosotros
+                </a>
+            </span>
+            </div>
+        </div>
+        <script>
+    // carrusel
+            const slides = document.querySelectorAll('.carousel-bg .carousel-img');
+            const dots = document.querySelectorAll('.carousel-dots .dot');
+            let current = 0, timer;
+
+            function showSlide(idx) {
+                slides.forEach((img, i) => {
+                    img.style.opacity = i === idx ? '1' : '0';
+                });
+                dots.forEach((dot, i) => {
+                    dot.style.background = i === idx ? 'var(--accent-red)' : 'var(--accent-blue)';
+                    dot.style.opacity = i === idx ? '1' : '0.5';
+                });
+                current = idx;
+            }
+
+            dots.forEach((dot, i) => {
+                dot.onclick = () => { showSlide(i); resetTimer(); };
+            });
+
+            function autoSlide() {
+                showSlide((current + 1) % slides.length);
+                timer = setTimeout(autoSlide, 5000);
+            }
+            function resetTimer() {
+                clearTimeout(timer);
+                timer = setTimeout(autoSlide, 5000);
+            }
+            showSlide(0);
+            timer = setTimeout(autoSlide, 5000);
+        </script>
+    </section>
+
+<!-- PANEL DE GESTION SEGUN EL ROL AUTENTICADO -->
+
+<!-- Solo visible para roles ADMIN, TALLER o VENDEDOR (no USER) a futuro agregar los demas roles -->
+<section sec:authorize="hasAnyRole('ADMIN', 'VENTAS', 'MECANICO','GERENTE')" class="management-section" id="gestion">
+    <div class="container">
+        <h2 class="section-title-white">Panel de <span class="highlight">Gestión</span></h2>
+
+        <p class="section-subtitle">Bienvenido al panel de control de SpringMotors</p>
+        
+        <!-- Panel de Administrador -->
+        <div sec:authorize="hasRole('ADMIN')" class="management-panel admin-panel">
+            <div class="management-grid">
+
+                <!-- Gestión de Usuarios -->
+                <div class="management-card">
+                    <div class="management-icon">
+                        <i class="fas fa-users-cog"></i>
+                    </div>
+                    <h4>Gestión de Usuarios</h4>
+                    <p>Administra todos los usuarios del sistema, roles y permisos.</p>
+                    <a th:href="@{/usuarios}" class="management-btn">Acceder</a>
+                </div>
+                
+                <!-- Gestión de Vehículos -->
+                <div class="management-card">
+                    <div class="management-icon">
+                        <i class="fas fa-car-alt"></i>
+                    </div>
+                    <h4>Gestión de Vehículos</h4>
+                    <p>Administra el inventario de vehículos disponibles.</p>
+                    <a th:href="@{/vehiculos/listarVehiculos}" class="management-btn">Acceder</a>
+                </div>
+                
+                <!-- Gestión de Repuestos -->
+                <div class="management-card">
+                    <div class="management-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h4>Gestión de Repuestos</h4>
+                    <p>Controla el inventario de piezas y repuestos.</p>
+                    <a th:href="@{/repuestos/listar}" class="management-btn">Acceder</a>
+                </div>
+                
+                <!-- Gestión de Proveedores -->
+                <div class="management-card">
+                    <div class="management-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h4>Gestion de proveedores</h4>
+                    <p>Proveedores, fabricantes y marcas de vehiculos.</p>
+                    <a th:href="@{/proveedores/listar}" class="management-btn">Acceder</a>
+                </div>
+                
+                <!-- Gestion de Fabricantes -->
+                <div class="management-card">
+                    <div class="management-icon">
+                        <i class="fas fa-car-side"></i>
+                    </div>
+                    <h4>Gestion de Fabricantes</h4>
+                    <p>inventario de fabricantes/marcas de los vehiculos.</p>
+                    <a th:href="@{/fabricantes/listar}" class="management-btn">Acceder</a>
+                </div>
+            </div>
+        </div>
+
+
+                <!-- Panel de Ventas -->
+        <div sec:authorize="hasRole('VENTAS')" class="management-panel admin-panel">
+            <div class="management-grid">
+                
+                <!-- Gestión de Vehículos -->
+                <div class="management-card">
+                    <div class="management-icon">
+                        <i class="fas fa-car-alt"></i>
+                    </div>
+                    <h4>Gestión de Vehículos</h4>
+                    <p>Administra el inventario de vehículos disponibles.</p>
+                    <a th:href="@{/vehiculos/listarVehiculos}" class="management-btn">Acceder</a>
+                </div>
+                
+                <!-- Gestión de Repuestos -->
+                <div class="management-card">
+                    <div class="management-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h4>Gestión de Repuestos</h4>
+                    <p>Controla el inventario de piezas y repuestos.</p>
+                    <a th:href="@{/repuestos/listar}" class="management-btn">Acceder</a>
+                </div>
+                
+            </div>
+        </div>
+
+        <!-- Panel de Mecanico -->
+        <div sec:authorize="hasRole('MECANICO')" class="management-panel admin-panel">
+            <div class="management-grid">
+                
+                 <!-- Gestión de Proveedores -->
+                <div class="management-card">
+                    <div class="management-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h4>Gestion de proveedores</h4>
+                    <p>Proveedores, fabricantes y marcas de vehiculos.</p>
+                    <a th:href="@{/proveedores/listar}" class="management-btn">Acceder</a>
+                </div>
+                
+                <!-- Gestión de Repuestos -->
+                <div class="management-card">
+                    <div class="management-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h4>Gestión de Repuestos</h4>
+                    <p>Controla el inventario de piezas y repuestos.</p>
+                    <a th:href="@{/repuestos/listar}" class="management-btn">Acceder</a>
+                </div>
+                
+            </div>
+        </div>
+
+                <!-- Panel de Gerente -->
+<div sec:authorize="hasRole('GERENTE')" class="management-panel admin-panel">
+            <div class="management-grid">
+                
+                <!-- Gestión de Vehículos -->
+                <div class="management-card">
+                    <div class="management-icon">
+                        <i class="fas fa-car-alt"></i>
+                    </div>
+                    <h4>Gestión de Vehículos</h4>
+                    <p>Administra el inventario de vehículos disponibles.</p>
+                    <a th:href="@{/vehiculos/listarVehiculos}" class="management-btn">Acceder</a>
+                </div>
+                
+                <!-- Gestión de Repuestos -->
+                <div class="management-card">
+                    <div class="management-icon">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <h4>Gestión de Repuestos</h4>
+                    <p>Controla el inventario de piezas y repuestos.</p>
+                    <a th:href="@{/repuestos/listar}" class="management-btn">Acceder</a>
+                </div>
+                
+                <!-- Gestión de Proveedores -->
+                <div class="management-card">
+                    <div class="management-icon">
+                        <i class="fas fa-building"></i>
+                    </div>
+                    <h4>Gestion de proveedores</h4>
+                    <p>Proveedores, fabricantes y marcas de vehiculos.</p>
+                    <a th:href="@{/proveedores/listar}" class="management-btn">Acceder</a>
+                </div>
+                
+                <!-- Gestion de Fabricantes -->
+                <div class="management-card">
+                    <div class="management-icon">
+                        <i class="fas fa-car-side"></i>
+                    </div>
+                    <h4>Gestion de Fabricantes</h4>
+                    <p>inventario de fabricantes/marcas de los vehiculos.</p>
+                    <a th:href="@{/fabricantes/listar}" class="management-btn">Acceder</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modern Spare Parts Section -->
+<section class="modern-spare-parts" id="repuestos">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Repuestos Premium <span class="highlight">Garantizados</span></h2>
+
+            <p class="section-subtitle">Componentes originales con certificación de fábrica para máxima durabilidad</p>
+        </div>
+        <!-- Parts Categories -->
+        <div class="parts-categories">
+            <div class="categories-grid">
+                <div class="category-card motor">
+                   <div class="category-content">
+    <h4>Motor y Transmisión</h4>
+    <ul>
+        <li>Bloques y componentes</li>
+        <li>Sistemas de combustible</li>
+        <li>Transmisiones automáticas</li>
+    </ul>
+    <button onclick="window.location.href='/repuestos/catalogo'" class="btn-explore">
+        Explorar <i class="fas fa-arrow-right"></i>
+    </button>
+</div>
+                </div>
+                <div class="category-card suspension">
+                    <div class="category-content">
+                        <h4>Suspensión y Dirección</h4>
+                        <ul>
+                            <li>Amortiguadores</li>
+                            <li>Brazos de control</li>
+                            <li>Terminales y rótulas</li>
+                        </ul>
+                         <button onclick="window.location.href='/repuestos/catalogo'" class="btn-explore">
+        Explorar <i class="fas fa-arrow-right"></i>
+    </button>
+                    </div>
+                </div>
+                <div class="category-card electric">
+                    <div class="category-content">
+                        <h4>Sistema Eléctrico</h4>
+                        <ul>
+                            <li>Alternadores</li>
+                            <li>Sensores</li>
+                            <li>Módulos de control</li>
+                        </ul>
+                         <button onclick="window.location.href='/repuestos/catalogo'" class="btn-explore">
+        Explorar <i class="fas fa-arrow-right"></i>
+    </button>
+                    </div>
+                </div>
+                <div class="category-card interior">
+                    <div class="category-content">
+                        <h4>Interior y Carrocería</h4>
+                        <ul>
+                            <li>Componentes de tablero</li>
+                            <li>Cerraduras y manijas</li>
+                            <li>Piezas de carrocería</li>
+                        </ul>
+                         <button onclick="window.location.href='/repuestos/catalogo'" class="btn-explore">
+        Explorar <i class="fas fa-arrow-right"></i>
+    </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Sección de Vehículos Mejorada -->
+<section class="vehicles" id="vehiculos">
+    <div class="vehicles-container">
+        <h2 class="section-title-vehicles">Explora Nuestro <span class="highlight">Exclusivo</span> Inventario</h2>
+        <p class="section-subtitle-vehicles">Descubre los vehículos que tenemos preparados para ti</p>
+        
+        <div class="catalog-grid">
+            <!-- Vehículo 1 -->
+            <div class="vehicle-card featured">
+                <div class="card-badge">Novedad 2025</div>
+                <div class="vehicle-image">
+                    <img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Vehículos nuevos">
+                    <div class="image-overlay">
+                        <h3>Modelos Nuevos</h3>
+                    </div>
+                </div>
+                <div class="vehicle-details">
+                    <div class="price-tag">
+                        <span class="original-price">$200,000,000</span>
+                        <span class="discount-price">$179,900,000*</span>
+                    </div>
+                    <p class="vehicle-description">Vehículos 0 km directamente de fábrica con garantía extendida y traidos por los mejores proveedores del mercado automotriz</p>
+                    <div class="specs-grid">
+                        <div class="spec-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>0-100km/h</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-leaf"></i>
+                            <span>Híbridos</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-cogs"></i>
+                            <span>Automáticos</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-tachometer-alt"></i>
+                            <span>625 HP</span>
+                        </div>
+                    </div>
+                    <a th:href="@{/vehiculos/catalogo}" class="cta-button primary">¡Ver ahora!</a>
+                    <p class="disclaimer">*Oferta por tiempo limitado</p>
+                </div>
+            </div>
+
+            <!-- Vehículo 2 -->
+            <div class="vehicle-card promotion">
+                <div class="card-badge">Oferta Especial</div>
+                <div class="vehicle-image">
+                    <img src="https://images.unsplash.com/photo-1502877338535-766e1452684a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Ofertas especiales">
+                    <div class="image-overlay">
+                        <h3>Promociones</h3>
+                    </div>
+                </div>
+                <div class="vehicle-details">
+                    <div class="promo-features">
+                        <div class="feature">
+                            <i class="fas fa-clock"></i>
+                            <span>Tiempo limitado</span>
+                        </div>
+                        <div class="feature">
+                            <i class="fas fa-percentage"></i>
+                            <span>Financiación 0%</span>
+                        </div>
+                    </div>
+                    <br><br>
+                    <p class="vehicle-description">Aprovecha nuestras condiciones exclusivas por  el primer aniversario de apertura, no te las puedes perder</p>
+                    <div class="specs-grid">
+                        <div class="spec-item">
+                            <i class="fas fa-star"></i>
+                            <span>Garantía 3 años</span>
+                        </div>
+                        <div class="spec-item">
+                            <i class="fas fa-gift"></i>
+                            <span>Mantenimiento incluido</span>
+                        </div>
+                    </div>
+                    <a th:href="@{/vehiculos/catalogo}" class="cta-button secondary">Ver promociones</a>
+                </div>
+            </div>
+
+          <!-- Vehículo 3 - Versión compacta -->
+<div class="vehicle-card brands">
+    <div class="vehicle-image">
+        <img src="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80" alt="Marcas exclusivas">
+        <div class="image-overlay">
+            <h3>Marcas Exclusivas</h3>
+        </div>
+    </div>
+    <div class="vehicle-details">
+        <div class="compact-brands-grid">
+            <img src="images/marcas/logo1.png" alt="Marca 1" title="Marca 1">
+            <img src="images/marcas/logo2.png" alt="Marca 2" title="Marca 2">
+            <img src="images/marcas/logo3.png" alt="Marca 3" title="Marca 3">
+            <img src="images/marcas/logo4.png" alt="Marca 4" title="Marca 4">
+            <img src="images/marcas/logo5.png" alt="Marca 5" title="Marca 5">
+            <img src="images/marcas/logo6.png" alt="Marca 6" title="Marca 6">
+        </div>
+           <br>
+        <p class="vehicle-description">Representamos las marcas más prestigiosas del mercado automotriz, desde marcas nuevas hasta las mas nombradas, todo por nuestros clientes</p>
+          <br>
+        <a th:href="@{/vehiculos/catalogo}" class="cta-button primary">Ver catálogo completo</a>
+    </div>
+</div>
+        </div>
+        
+        <div class="support-section">
+            <p>¿Necesitas ayuda para encontrar tu vehículo ideal?</p>
+            <button class="hero-btn">
+                <i class="fas fa-headset"></i> Contactar a un asesor
+            </button>
+        </div>
+    </div>
+</section>
+
+    <!-- About Section -->
+    <section class="about" id="nosotros">
+        <h2 class="section-title">Acerca de <span class="highlight">Nosotros</span></h2>
+        <br><br><br><br>
+        <div class="about-container">
+            <div class="about-image">
+                <img src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="About Us">
+            </div>
+            <div class="about-content">
+                <h3 class="about-title">SpringMotors - Excelencia Automotriz</h3>
+                <p class="about-text">Fundada en 2025, SpringMotors se ha consolidado como líder en el mercado automotriz, ofreciendo vehículos premium y repuestos de la más alta calidad. Nuestro compromiso es brindar una experiencia excepcional a cada cliente.</p>
+                
+                <div class="about-features">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h4>Calidad Certificada</h4>
+                            <p>Todos nuestros productos cumplen con los más altos estándares internacionales.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                                                <div class="feature-text">
+                            <h4>Seguridad Garantizada</h4>
+                            <p>Ofrecemos garantías extendidas y soporte técnico especializado para cada producto.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-tie"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h4>Asesoría Profesional</h4>
+                            <p>Nuestros asesores te ayudarán a elegir el vehículo o repuesto ideal según tus necesidades.</p>
+                        </div>
+                    </div>
+
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <div class="feature-text">
+                            <h4>Servicio Técnico</h4>
+                            <p>Contamos con talleres certificados para mantenimiento y reparación de vehículos.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div>
+                <div class="footer-logo"><i class="fas fa-car"></i> Spring<span>Motors</span></div>
+                <p class="footer-about">En SpringMotors llevamos más de una década ofreciendo calidad, confianza y elegancia en cada uno de nuestros vehículos y repuestos.</p>
+                <div class="social-links">
+                    <a class="social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a class="social-link"><i class="fab fa-instagram"></i></a>
+                    <a  class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a  class="social-link"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Enlaces Rápidos</h4>
+                <ul class="footer-links">
+                    <li><a href="#"><i class="fas fa-angle-right"></i> Inicio</a></li>
+                    <li><a href="#vehiculos"><i class="fas fa-angle-right"></i> Vehículos</a></li>
+                    <li><a href="#repuestos"><i class="fas fa-angle-right"></i> Repuestos</a></li>
+                    <li><a href="#nosotros"><i class="fas fa-angle-right"></i> Acerca de Nosotros</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Boletín</h4>
+                <div class="footer-newsletter">
+                    <p>Suscríbete para recibir noticias y promociones exclusivas.</p>
+                    <form class="newsletter-form">
+                        <input type="email" class="newsletter-input" placeholder="Tu correo electrónico">
+                        <button type="submit" class="newsletter-btn"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            &copy; 2025 SpringMotors. Todos los derechos reservados.
+        </div>
+    </footer>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get all interactive parts
+        const partSpots = document.querySelectorAll('.part-spot');
+        const partItems = document.querySelectorAll('.part-item');
+        const detailContents = document.querySelectorAll('.detail-content');
+        const defaultDetail = document.querySelector('.detail-default');
+        
+        // Function to show part details
+        function showPartDetail(partType) {
+            // Hide all details and default message
+            detailContents.forEach(content => content.classList.remove('active'));
+            defaultDetail.style.display = 'none';
+            
+            // Show selected part
+            const selectedDetail = document.querySelector(`.detail-${partType}`);
+            if (selectedDetail) {
+                selectedDetail.classList.add('active');
+            }
+        }
+        
+        // Add click events to car parts
+        partSpots.forEach(spot => {
+            spot.addEventListener('click', function() {
+                const partType = this.getAttribute('data-part');
+                showPartDetail(partType);
+            });
+        });
+        
+        // Add click events to gallery items
+        partItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const partType = this.getAttribute('data-part');
+                showPartDetail(partType);
+                
+                // Scroll to details if on mobile
+                if (window.innerWidth < 768) {
+                    document.querySelector('.part-details').scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
