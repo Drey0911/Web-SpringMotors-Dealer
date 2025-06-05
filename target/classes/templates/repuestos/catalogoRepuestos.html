@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+    <title>Catálogo de Repuestos - SpringMotors</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/css/stylesCatalogo.css">
+    <style>
+        /* Estilos para los filtros */
+        .filter-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .filter-title {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: #14213d;
+            font-weight: 600;
+        }
+        
+        .filter-group {
+            margin-bottom: 15px;
+        }
+        
+        .filter-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .filter-input, .filter-select {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+        
+        .filter-button {
+            background-color: #14213d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .filter-button:hover {
+            background-color: #1a2a4a;
+        }
+        
+        .filter-reset {
+            background-color: #6c757d;
+            margin-left: 10px;
+        }
+        
+        .filter-reset:hover {
+            background-color: #5a6268;
+        }
+        
+        /* Ajustes para el input de búsqueda por marca */
+        .search-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div th:if="${session.userId}" style="display:none;" id="userId" th:attr="data-userid=${session.userId}"></div>
+    
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="logo" href="/">
+                <i class="fas fa-car"></i>
+                <span class="spring">Spring</span><span class="motors">Motors</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="catalog-header">
+        <h1 class="catalog-title">Catálogo de Repuestos</h1>
+        <br><br>
+        <p class="catalog-subtitle">Encuentra los repuestos que necesitas para tu vehículo</p>
+    </div>
+
+    <div class="container">
+        <!-- Sección de filtros mejorada -->
+        <div class="filter-section">
+            <h3 class="filter-title">Filtrar Repuestos</h3>
+            <div class="row">
+                <!-- Búsqueda por marca (input de texto) -->
+                <div class="col-md-3">
+                    <div class="filter-group">
+                        <label class="filter-label">Marca</label>
+                        <input type="text" class="search-input" id="filter-brand" placeholder="Ej: Bosch, Toyota">
+                    </div>
+                </div>
+                
+                <!-- Filtro por tipo (select) -->
+                <div class="col-md-2">
+                    <div class="filter-group">
+                        <label class="filter-label">Tipo</label>
+                        <select class="filter-select" id="filter-type">
+                             <option value="">Todos</option>
+                           <option value="Motor y Transmisión">Motor y Transmisión</option>
+                        <option value="Suspensión y Dirección">Suspensión y Dirección</option>
+                        <option value="Sistema Eléctrico">Sistema Eléctrico</option>
+                        <option value="Interior y Carrocería">Interior y Carrocería</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Filtro por proveedor (select desde BD) -->
+                <div class="col-md-2">
+                    <div class="filter-group">
+                        <label class="filter-label">Proveedor</label>
+                        <select class="filter-select" id="filter-supplier">
+                            <option value="">Todos los proveedores</option>
+                            <option th:each="proveedor : ${proveedores}"
+                                    th:value="${proveedor.nombre}"
+                                    th:text="${proveedor.nombre}">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Filtro por estado (select) -->
+                <div class="col-md-2">
+                    <div class="filter-group">
+                        <label class="filter-label">Estado</label>
+                        <select class="filter-select" id="filter-status">
+                            <option value="">Todos</option>
+                            <option value="Disponible">Disponible</option>
+                            <option value="Agotado">Agotado</option>
+                            <option value="En pedido">En pedido</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Filtro por precio (input numérico) -->
+                <div class="col-md-2">
+                    <div class="filter-group">
+                        <label class="filter-label">Precio máximo</label>
+                        <input type="number" class="filter-input" id="filter-price" placeholder="Sin Limite" min="0">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mt-3">
+                <div class="col-md-12">
+                    <button class="filter-button" id="apply-filters">
+                        <i class="fas fa-filter"></i> Aplicar Filtros
+                    </button>
+                    <button class="filter-button filter-reset" id="reset-filters">
+                        <i class="fas fa-undo"></i> Restablecer
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Listado de repuestos -->
+        <div class="vehicle-cards-container">
+            <div class="vehicle-cards" id="repuestos-cards">
+                <!-- Tarjeta de repuesto (ejemplo) -->
+                <div th:each="repuesto : ${repuestos}" class="vehicle-card">
+                    <div class="card-header">
+                        <div class="vehicle-status" th:classappend="${repuesto.estado == 'Disponible'} ? 'status-available' : 
+                                      (${repuesto.estado == 'Agotado'} ? 'status-sold' : 'status-reserved')">
+                            <span th:text="${repuesto.estado}"></span>
+                        </div>
+                        <div class="vehicle-image-container">
+                            <img th:if="${repuesto.foto != null}" 
+                                 th:src="${repuesto.getFotoBase64()}" 
+                                 class="vehicle-image" 
+                                 alt="Imagen del repuesto">
+                            <div th:unless="${repuesto.foto != null}" class="vehicle-image-placeholder">
+                                <i class="fas fa-box-open"></i>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="vehicle-brand-model">
+                            <span class="vehicle-brand" th:text="${repuesto.marca}"></span>
+                            <h3 class="vehicle-model" th:text="${repuesto.nombre}"></h3>
+                        </div>
+                        
+                        <div class="vehicle-specs">
+                            <div class="spec-item">
+                                <i class="fas fa-tag"></i>
+                                <span th:text="${repuesto.tipo}"></span>
+                            </div>
+                            <div class="spec-item">
+                                <i class="fas fa-truck"></i>
+                                <span th:text="${repuesto.proveedor.nombre}"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="vehicle-price-container">
+                            <span class="price-label">Precio:</span>
+                            <span class="vehicle-price" th:text="${'$' + #numbers.formatDecimal(repuesto.precio, 1, 'COMMA', 2, 'POINT')}"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div sec:authorize="isAnonymous()" class="login-message">
+                            <i class="fas fa-info-circle"></i> Inicia sesión para comprar
+                        </div>
+                        
+                        <div sec:authorize="isAuthenticated()">
+                            <button class="buy-btn" th:data-id="${repuesto.id}">
+                                <i class="fas fa-shopping-cart"></i> Comprar
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="vehicle-details-overlay">
+                        <div class="details-content">
+                            <h4>Detalles completos</h4>
+                            <div class="detail-item">
+                                <span class="detail-label">Marca:</span>
+                                <span class="detail-value" th:text="${repuesto.marca}"></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Nombre:</span>
+                                <span class="detail-value" th:text="${repuesto.nombre}"></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Tipo:</span>
+                                <span class="detail-value" th:text="${repuesto.tipo}"></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Proveedor:</span>
+                                <span class="detail-value" th:text="${repuesto.proveedor.nombre}"></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Estado:</span>
+                                <span class="detail-value" th:text="${repuesto.estado}"></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Descripción:</span>
+                                <span class="detail-value" th:text="${repuesto.descripcion}"></span>
+                            </div>
+                            <button class="close-details-btn">
+                                <i class="fas fa-times"></i> Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div th:if="${repuestos.empty}" class="no-vehicles">
+                    <i class="fas fa-box-open"></i>
+                    <h3>No hay repuestos disponibles</h3>
+                    <p>Actualmente no contamos con repuestos en nuestro catálogo</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuración de eventos de compra
+            const buyButtons = document.querySelectorAll('.buy-btn');
+            const userIdElement = document.getElementById('userId');
+            const isAuthenticated = userIdElement !== null;
+            
+            // Mostrar/ocultar detalles
+            document.querySelectorAll('.vehicle-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (e.target.closest('.buy-btn') || e.target.closest('.close-details-btn')) {
+                        return;
+                    }
+                    this.querySelector('.vehicle-details-overlay').style.display = 'flex';
+                });
+            });
+            
+            // Cerrar detalles
+            document.querySelectorAll('.close-details-btn').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    this.closest('.vehicle-details-overlay').style.display = 'none';
+                });
+            });
+            
+            // Configurar botones de compra
+            buyButtons.forEach(button => {
+                if (!isAuthenticated) {
+                    button.disabled = true;
+                    button.title = "Debe iniciar sesión para comprar";
+                    return;
+                }
+                
+                button.addEventListener('click', async function(e) {
+                    e.stopPropagation();
+                    const repuestoId = this.getAttribute('data-id');
+                    const userId = userIdElement.getAttribute('data-userid');
+                    
+                    try {
+                        const { value: accept } = await Swal.fire({
+                            title: 'Confirmar compra',
+                            html: `¿Estás seguro que deseas comprar este repuesto?`,
+                            icon: 'question',
+                            showCancelButton: true,
+                            confirmButtonColor: '#14213d',
+                            cancelButtonColor: '#d33',
+                            confirmButtonText: 'Sí, comprar',
+                            cancelButtonText: 'Cancelar'
+                        });
+                        
+                        if (!accept) return;
+                        
+                        Swal.fire({
+                            title: 'Procesando compra...',
+                            allowOutsideClick: false,
+                            didOpen: () => Swal.showLoading()
+                        });
+                        
+                        const token = document.querySelector('meta[name="_csrf"]').content;
+                        const header = document.querySelector('meta[name="_csrf_header"]').content;
+                        
+                        const response = await fetch(`/repuestos/comprar?id=${repuestoId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                [header]: token
+                            },
+                            body: JSON.stringify({ 
+                                userId: userId,
+                                repuestoId: repuestoId
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            await Swal.fire({
+                                title: '¡Compra exitosa!',
+                                text: result.message,
+                                icon: 'success',
+                                confirmButtonColor: '#14213d'
+                            });
+                            location.reload();
+                        } else {
+                            throw new Error(result.message || 'Error al procesar la compra');
+                        }
+                    } catch (error) {
+                        Swal.fire({
+                            title: 'Error',
+                            text: error.message,
+                            icon: 'error'
+                        });
+                        console.error('Error:', error);
+                    }
+                });
+            });
+            
+            // Funcionalidad de filtrado mejorada
+            const applyFiltersButton = document.getElementById('apply-filters');
+            const resetFiltersButton = document.getElementById('reset-filters');
+            const repuestosContainer = document.getElementById('repuestos-cards');
+            const originalNoRepuestos = repuestosContainer.querySelector('.no-vehicles');
+            
+            applyFiltersButton.addEventListener('click', function() {
+                const brandFilter = document.getElementById('filter-brand').value.toLowerCase();
+                const typeFilter = document.getElementById('filter-type').value.toLowerCase();
+                const supplierFilter = document.getElementById('filter-supplier').value.toLowerCase();
+                const statusFilter = document.getElementById('filter-status').value.toLowerCase();
+                const priceFilter = parseFloat(document.getElementById('filter-price').value) || Infinity;
+                
+                const cards = repuestosContainer.querySelectorAll('.vehicle-card');
+                let hasVisibleCards = false;
+                
+                cards.forEach(card => {
+                    const brand = card.querySelector('.vehicle-brand').textContent.toLowerCase();
+                    const type = card.querySelector('.spec-item:nth-child(1) span').textContent.toLowerCase();
+                    const supplier = card.querySelector('.spec-item:nth-child(2) span').textContent.toLowerCase();
+                    const status = card.querySelector('.vehicle-status span').textContent.toLowerCase();
+                    const priceText = card.querySelector('.vehicle-price').textContent.replace(/[^0-9.]/g, '');
+                    const price = parseFloat(priceText);
+                    
+                    const brandMatch = brandFilter === '' || brand.includes(brandFilter);
+                    const typeMatch = typeFilter === '' || type === typeFilter;
+                    const supplierMatch = supplierFilter === '' || supplier === supplierFilter;
+                    const statusMatch = statusFilter === '' || status === statusFilter;
+                    const priceMatch = price <= priceFilter;
+                    
+                    if (brandMatch && typeMatch && supplierMatch && statusMatch && priceMatch) {
+                        card.style.display = 'block';
+                        hasVisibleCards = true;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                // Mostrar mensaje si no hay coincidencias
+                const noRepuestosMessage = repuestosContainer.querySelector('.no-vehicles');
+                if (!hasVisibleCards) {
+                    if (!noRepuestosMessage) {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = 'no-vehicles';
+                        messageDiv.innerHTML = `
+                            <i class="fas fa-box-open"></i>
+                            <h3>No hay repuestos que coincidan</h3>
+                            <p>Intenta ajustar tus criterios de búsqueda</p>
+                        `;
+                        repuestosContainer.appendChild(messageDiv);
+                    }
+                } else if (noRepuestosMessage && noRepuestosMessage !== originalNoRepuestos) {
+                    repuestosContainer.removeChild(noRepuestosMessage);
+                }
+            });
+            
+            // Restablecer filtros
+            resetFiltersButton.addEventListener('click', function() {
+                document.getElementById('filter-brand').value = '';
+                document.getElementById('filter-type').value = '';
+                document.getElementById('filter-supplier').value = '';
+                document.getElementById('filter-status').value = '';
+                document.getElementById('filter-price').value = '';
+                
+                const cards = repuestosContainer.querySelectorAll('.vehicle-card');
+                cards.forEach(card => {
+                    card.style.display = 'block';
+                });
+                
+                const noRepuestosMessage = repuestosContainer.querySelector('.no-vehicles');
+                if (noRepuestosMessage && noRepuestosMessage !== originalNoRepuestos) {
+                    repuestosContainer.removeChild(noRepuestosMessage);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

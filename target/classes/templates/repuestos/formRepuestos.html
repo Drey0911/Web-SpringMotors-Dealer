@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${repuesto.id} ? 'Editar Repuesto' : 'Nuevo Repuesto'">Formulario de Repuesto</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>    
+    :root {
+        --primary-dark: #0a0a23;
+        --secondary-dark: #1a1a2e;
+        --accent-red: #9d0208;
+        --accent-blue: #14213d;
+        --text-light: #f8f9fa;
+        --text-gray: #adb5bd;
+        --gold-accent: #d4af37;
+    }
+    
+    body {
+        background-color: #f8f9fa;
+        color: var(--primary-dark);
+        font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .navbar {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 100%);
+        padding: 1rem 2rem;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
+        border-bottom: 3px solid var(--gold-accent);
+    }
+    
+    .logo {
+        color: white;
+        font-size: 1.8rem;
+        font-weight: 700;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        letter-spacing: 1px;
+    }
+    
+    .logo i {
+        margin-right: 12px;
+        color: var(--accent-red);
+        font-size: 1.5em;
+    }
+    
+    .logo .spring {
+        color: white;
+    }
+    
+    .logo .motors {
+        color: var(--accent-red);
+    }
+    
+    .form-container {
+        max-width: 900px;
+        margin: 3rem auto;
+        padding: 40px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .form-header {
+        margin-bottom: 35px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid rgba(10, 10, 35, 0.1);
+        text-align: center;
+    }
+    
+    .form-title {
+        color: var(--primary-dark);
+        font-weight: 800;
+        margin: 0;
+        font-size: 2.2rem;
+        position: relative;
+        display: inline-block;
+        letter-spacing: -0.5px;
+    }
+    
+    .form-title:after {
+        content: '';
+        position: absolute;
+        bottom: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: var(--accent-red);
+        border-radius: 2px;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: var(--accent-blue);
+        margin-bottom: 8px;
+    }
+    
+    .form-control, .form-select {
+        padding: 12px 18px;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 0 3px rgba(20, 33, 61, 0.1);
+    }
+    
+    .form-text {
+        font-size: 0.85rem;
+        color: var(--text-gray);
+    }
+    
+    .form-footer {
+        margin-top: 30px;
+        display: flex;
+        justify-content: space-between;
+        padding-top: 20px;
+        border-top: 2px solid rgba(10, 10, 35, 0.1);
+    }
+    
+    .btn {
+        padding: 12px 25px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-secondary {
+        background: white;
+        color: var(--accent-blue);
+        border: 1px solid var(--accent-blue);
+    }
+    
+    .btn-secondary:hover {
+        background: var(--accent-blue);
+        color: white;
+        transform: translateY(-2px);
+    }
+    
+    .btn-primary {
+        background: var(--accent-red);
+        border: none;
+        box-shadow: 0 4px 12px rgba(157, 2, 8, 0.3);
+    }
+    
+    .btn-primary:hover {
+        background: #7d0106;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(157, 2, 8, 0.4);
+    }
+    
+    .invalid-feedback {
+        color: var(--accent-red);
+        font-weight: 500;
+    }
+    
+    .vehicle-image-preview {
+        max-width: 250px;
+        max-height: 180px;
+        border-radius: 8px;
+        object-fit: cover;
+        border: 2px dashed rgba(20, 33, 61, 0.2);
+        margin-top: 10px;
+    }
+    
+    .no-image-placeholder {
+        width: 250px;
+        height: 180px;
+        background-color: #f8f9fa;
+        border: 2px dashed #adb5bd;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #adb5bd;
+        font-size: 3rem;
+        margin-top: 10px;
+    }
+    
+    .file-upload-container {
+        margin-bottom: 20px;
+    }
+    
+    .file-upload-label {
+        display: block;
+        margin-bottom: 10px;
+    }
+    
+    .file-upload-input {
+        display: none;
+    }
+    
+    .file-upload-button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: var(--accent-blue);
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .file-upload-button:hover {
+        background-color: #0d172e;
+    }
+    
+    .file-upload-name {
+        margin-left: 10px;
+        font-size: 0.9rem;
+        color: var(--text-gray);
+    }
+    
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 30px 20px;
+            margin: 2rem auto;
+        }
+        
+        .form-title {
+            font-size: 1.8rem;
+        }
+        
+        .form-footer {
+            flex-direction: column-reverse;
+            gap: 15px;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .vehicle-image-preview, .no-image-placeholder {
+            max-width: 100%;
+            height: auto;
+        }
+    }
+</style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="logo" href="/">
+                <i class="fas fa-car"></i>
+                <span class="spring">Spring</span><span class="motors">Motors</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="form-container">
+            <div class="form-header text-center mb-4">
+                <h2 class="form-title" th:text="${repuesto.id} ? 'Editar Repuesto' : 'Nuevo Repuesto'"></h2>
+            </div>
+            
+            <form th:action="@{/repuestos/guardar}" th:object="${repuesto}" method="post" enctype="multipart/form-data" id="repuestoForm">
+                <input type="hidden" th:field="*{id}" />
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" class="form-control" th:field="*{nombre}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Marca</label>
+                            <input type="text" class="form-control" th:field="*{marca}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Precio</label>
+                            <input type="number" step="0.01" class="form-control" th:field="*{precio}" required>
+                        </div>
+
+                                        
+                <div class="mb-3">
+                    <label class="form-label">Descripción</label>
+                    <textarea class="form-control" th:field="*{descripcion}" rows="3"></textarea>
+                </div>
+
+                                        <div class="mb-3">
+                    <label class="form-label">Usuarios asociados</label>
+                    <div class="usuarios-container">
+                        <div th:each="usuario : ${usuarios}" class="form-check">
+                            <input class="form-check-input" type="checkbox" 
+                                   th:id="${'usuario_' + usuario.id}"
+                                   th:value="${usuario.id}"
+                                   name="usuariosSeleccionados"
+                                   th:checked="${usuariosAsociados.contains(usuario.id)}">
+                            <label class="form-check-label" th:for="${'usuario_' + usuario.id}" 
+                                   th:text="${usuario.nombreUsuario}"></label>
+                        </div>
+                    </div>
+                </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label class="form-label">Estado</label>
+                            <select class="form-select" th:field="*{estado}" required>
+                                <option value="Disponible">Disponible</option>
+                                <option value="Agotado">Agotado</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tipo</label>
+                            <select class="form-select" th:field="*{tipo}" required>
+                        <option value="Motor y Transmisión">Motor y Transmisión</option>
+                        <option value="Suspensión y Dirección">Suspensión y Dirección</option>
+                        <option value="Sistema Eléctrico">Sistema Eléctrico</option>
+                        <option value="Interior y Carrocería">Interior y Carrocería</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label">Proveedor</label>
+                            <select class="form-select" name="proveedorId" required>
+                                <option th:each="proveedor : ${proveedores}"
+                                        th:value="${proveedor.id}"
+                                        th:text="${proveedor.nombre}"
+                                        th:selected="${repuesto.proveedor != null && repuesto.proveedor.id == proveedor.id}">
+                                </option>
+                            </select>
+                        </div>
+                        
+                                     <div class="mb-4 file-upload-container">
+                    <label class="form-label">Imagen del repuesto</label>
+                    <div>
+                        <label for="imagenFile" class="file-upload-button">
+                            <i class="fas fa-upload"></i> Seleccionar imagen
+                        </label>
+                        <span id="file-name" class="file-upload-name"></span>
+                        <input type="file" id="imagenFile" name="imagenFile" accept="image/*" class="file-upload-input">
+                    </div>
+                    
+                    <div class="mt-3">
+                        <div th:if="${repuesto.foto != null}">
+                            <img th:src="${repuesto.getFotoBase64()}" class="vehicle-image-preview" alt="Imagen actual">
+                            <p class="form-text">Imagen actual. Subir una nueva imagen la reemplazará.</p>
+                        </div>
+                        <div th:unless="${repuesto.foto != null}" class="no-image-placeholder">
+                            <i class="fas fa-box-open"></i>
+                        </div>
+                    </div>
+                </div>
+                    </div>
+                </div>
+            
+                
+                <div class="d-flex justify-content-between mt-4">
+                    <a th:href="@{/repuestos/listar}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> 
+                        <span th:text="${repuesto.id} ? 'Actualizar' : 'Guardar'"></span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mostrar nombre del archivo seleccionado
+            const fileInput = document.getElementById('imagenFile');
+            const fileNameSpan = document.getElementById('file-name');
+            
+            if (fileInput && fileNameSpan) {
+                fileInput.addEventListener('change', function() {
+                    if (this.files && this.files.length > 0) {
+                        fileNameSpan.textContent = this.files[0].name;
+                        
+                        // Mostrar vista previa de la imagen seleccionada
+                        const previewContainer = document.querySelector('.no-image-placeholder');
+                        if (previewContainer) {
+                            const reader = new FileReader();
+                            reader.onload = function(e) {
+                                const img = document.createElement('img');
+                                img.src = e.target.result;
+                                img.className = 'vehicle-image-preview';
+                                
+                                // Reemplazar el placeholder con la imagen
+                                previewContainer.parentNode.replaceChild(img, previewContainer);
+                            }
+                            reader.readAsDataURL(this.files[0]);
+                        }
+                    } else {
+                        fileNameSpan.textContent = '';
+                    }
+                });
+            }
+            
+            // Validación de formulario
+            (function() {
+                'use strict'
+                
+                const form = document.getElementById('repuestoForm');
+                
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    
+                    if (form.checkValidity()) {
+                        form.submit();
+                    }
+                    
+                    form.classList.add('was-validated');
+                }, false);
+            })();
+            
+            // Mostrar mensaje de éxito si existe en la URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const successParam = urlParams.get('success');
+            
+            if (successParam) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Operación exitosa',
+                    text: successParam === 'create' ? 'Repuesto creado correctamente' : 
+                          successParam === 'update' ? 'Repuesto actualizado correctamente' : 
+                          'Operación completada',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    background: 'white',
+                    position: 'top-end'
+                });
+            }
+        });
+    </script>
+</body>
+</html>

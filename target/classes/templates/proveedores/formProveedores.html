@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${proveedor.id} ? 'Editar Proveedor' : 'Nuevo Proveedor'">Formulario de Proveedor</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<style>    
+    :root {
+        --primary-dark: #0a0a23;
+        --secondary-dark: #1a1a2e;
+        --accent-red: #9d0208;
+        --accent-blue: #14213d;
+        --text-light: #f8f9fa;
+        --text-gray: #adb5bd;
+        --gold-accent: #d4af37;
+    }
+    
+    body {
+        background-color: #f8f9fa;
+        color: var(--primary-dark);
+        font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .navbar {
+        background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary-dark) 100%);
+        padding: 1rem 2rem;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.15);
+        border-bottom: 3px solid var(--gold-accent);
+    }
+    
+    .logo {
+        color: white;
+        font-size: 1.8rem;
+        font-weight: 700;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        letter-spacing: 1px;
+    }
+    
+    .logo i {
+        margin-right: 12px;
+        color: var(--accent-red);
+        font-size: 1.5em;
+    }
+    
+    .logo .spring {
+        color: white;
+    }
+    
+    .logo .motors {
+        color: var(--accent-red);
+    }
+    
+    .form-container {
+        max-width: 800px;
+        margin: 3rem auto;
+        padding: 40px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .form-header {
+        margin-bottom: 35px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid rgba(10, 10, 35, 0.1);
+        text-align: center;
+    }
+    
+    .form-title {
+        color: var(--primary-dark);
+        font-weight: 800;
+        margin: 0;
+        font-size: 2.2rem;
+        position: relative;
+        display: inline-block;
+        letter-spacing: -0.5px;
+    }
+    
+    .form-title:after {
+        content: '';
+        position: absolute;
+        bottom: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: var(--accent-red);
+        border-radius: 2px;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: var(--accent-blue);
+        margin-bottom: 8px;
+    }
+    
+    .form-control, .form-select {
+        padding: 12px 18px;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus, .form-select:focus {
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 0 3px rgba(20, 33, 61, 0.1);
+    }
+    
+    .form-text {
+        font-size: 0.85rem;
+        color: var(--text-gray);
+    }
+    
+    .form-footer {
+        margin-top: 30px;
+        display: flex;
+        justify-content: space-between;
+        padding-top: 20px;
+        border-top: 2px solid rgba(10, 10, 35, 0.1);
+    }
+    
+    .btn {
+        padding: 12px 25px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        border-radius: 50px;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-secondary {
+        background: white;
+        color: var(--accent-blue);
+        border: 1px solid var(--accent-blue);
+    }
+    
+    .btn-secondary:hover {
+        background: rgb(20, 33, 61);
+        transform: translateY(-2px);
+    }
+    
+    .btn-primary {
+        background: var(--accent-red);
+        border: none;
+        box-shadow: 0 4px 12px rgba(157, 2, 8, 0.3);
+    }
+    
+    .btn-primary:hover {
+        background: #7d0106;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(157, 2, 8, 0.4);
+    }
+    
+    .invalid-feedback {
+        color: var(--accent-red);
+        font-weight: 500;
+    }
+    
+    .fabricante-item {
+        margin-bottom: 8px;
+        padding: 8px;
+        border-radius: 5px;
+        background: #f8f9fa;
+    }
+    
+    .fabricantes-container {
+        max-height: 300px;
+        overflow-y: auto;
+        padding: 10px;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    
+    @media (max-width: 768px) {
+        .form-container {
+            padding: 30px 20px;
+            margin: 2rem auto;
+        }
+        
+        .form-title {
+            font-size: 1.8rem;
+        }
+        
+        .form-footer {
+            flex-direction: column-reverse;
+            gap: 15px;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+<body>
+    <!-- Navbar elegante -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="logo" href="/">
+                <i class="fas fa-car"></i>
+                <span class="spring">Spring</span><span class="motors">Motors</span>
+            </a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="form-container">
+            <div class="form-header">
+                <h2 class="form-title" th:text="${proveedor.id} ? 'Editar Proveedor' : 'Nuevo Proveedor'">
+                    Formulario de Proveedor
+                </h2>
+            </div>
+            
+            <form th:action="${proveedor.id != null} ? @{/proveedores/editar/{id}(id=${proveedor.id})} : @{/proveedores/guardar}" 
+      th:object="${proveedor}" method="post" id="proveedorForm">
+                <input type="hidden" th:field="*{id}" />
+                
+                <div class="mb-4">
+                    <label for="nombre" class="form-label">Nombre del Proveedor</label>
+                    <input type="text" class="form-control" id="nombre" 
+                           th:field="*{nombre}" required>
+                    <div class="invalid-feedback">Por favor ingrese el nombre del proveedor</div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="encargado" class="form-label">Encargado</label>
+                    <input type="text" class="form-control" id="encargado" 
+                           th:field="*{encargado}" required>
+                    <div class="invalid-feedback">Por favor ingrese el nombre del encargado</div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="telefono" class="form-label">Teléfono</label>
+                    <input type="tel" class="form-control" id="telefono" 
+                           th:field="*{telefono}" required>
+                    <div class="invalid-feedback">Por favor ingrese el teléfono</div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" 
+                           th:field="*{email}">
+                    <div class="invalid-feedback">Por favor ingrese un email válido</div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="direccion" class="form-label">Dirección</label>
+                    <input type="text" class="form-control" id="direccion" 
+                           th:field="*{direccion}">
+                </div>
+                
+                <div class="mb-4">
+                    <label class="form-label">Fabricantes</label>
+                    <div class="fabricantes-container">
+                        <div th:each="fabricante : ${todosFabricantes}" class="fabricante-item">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" 
+                                       th:id="${'fabricante_' + fabricante.id}"
+                                       th:value="${fabricante.id}"
+                                       name="fabricantesIds"
+                                       th:checked="${#lists.contains(proveedor.fabricantes?.![id], fabricante.id)}">
+                                <label class="form-check-label" th:for="${'fabricante_' + fabricante.id}">
+                                    <span th:text="${fabricante.nombre}"></span> 
+                                    (<span th:text="${fabricante.pais}"></span>)
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-footer">
+                    <a th:href="@{/proveedores/listar}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> 
+                        <span th:text="${proveedor.id} ? 'Actualizar Proveedor' : 'Crear Proveedor'">Guardar</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Validación del formulario
+        (function() {
+            'use strict';
+            
+            // Obtener el formulario
+            const form = document.getElementById('proveedorForm');
+            
+            // Validar al enviar
+            form.addEventListener('submit', function(event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                
+                form.classList.add('was-validated');
+            }, false);
+        })();
+    </script>
+</body>
+</html>
