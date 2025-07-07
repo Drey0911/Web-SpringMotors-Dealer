@@ -121,9 +121,10 @@ body {
 /* Brands Marquee */
 .brands-bar {
     background: white;
-    padding: 20px 0;
+    padding: 15px 0;
     margin-top: 80px;
-    overflow: hidden;
+    width: 100%;
+    position: relative;
     box-shadow: 0 5px 15px rgba(0,0,0,0.05);
 }
 
@@ -131,13 +132,16 @@ body {
     display: flex;
     align-items: center;
     animation: scroll 30s linear infinite;
+    will-change: transform; /* Mejora el rendimiento de la animación */
+    padding: 10px 0; /* Espacio adicional */
 }
 
 .brand-item {
     flex: 0 0 auto;
-    margin: 0 30px;
+    margin: 0 20px;
     opacity: 0.7;
     transition: all 0.3s ease;
+    min-width: 80px; /* Ancho mínimo para móviles */
 }
 
 .brand-item:hover {
@@ -146,9 +150,11 @@ body {
 }
 
 .brand-item img {
-    height: 40px;
+    height: 40px; /* Tamaño reducido para móviles */
+    max-width: 100px; /* Ancho máximo para evitar desbordamiento */
     filter: grayscale(100%);
     transition: all 0.3s ease;
+    object-fit: contain; /* Asegura que las imágenes mantengan su relación de aspecto */
 }
 
 .brand-item:hover img {
@@ -161,6 +167,45 @@ body {
     }
     100% {
         transform: translateX(-50%);
+    }
+}
+
+/* Media Queries para mejor responsividad */
+@media (max-width: 768px) {
+    .brands-bar {
+        padding: 10px 0;
+        margin-top: 130px; /* Ajuste para móviles */
+    }
+    
+    .brand-item {
+        margin: 0 15px;
+        min-width: 60px; /* Más pequeño para móviles */
+    }
+    
+    .brand-item img {
+        height: 25px; /* Más pequeño para móviles */
+        max-width: 80px; /* Más estrecho para móviles */
+    }
+    
+    /* Ajustar velocidad de animación para móviles */
+    .brands-container {
+        animation: scroll 20s linear infinite;
+    }
+}
+
+@media (max-width: 480px) {
+    .brand-item {
+        margin: 0 10px;
+        min-width: 50px;
+    }
+    
+    .brand-item img {
+        height: 20px;
+        max-width: 60px;
+    }
+    
+    .brands-container {
+        animation: scroll 15s linear infinite;
     }
 }
 
