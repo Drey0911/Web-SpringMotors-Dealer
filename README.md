@@ -1,9 +1,4 @@
 # SpringMotors
-
-<p align="center">
-  <img src="img/logo.png" alt="SpringMotors Logo" width="300">
-</p>
-
 ## Tecnologías
 
 <p align="center">
